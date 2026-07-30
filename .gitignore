@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.env
+.env.local
+*.local
+
+# Firebase emulator + CLI artifacts
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+firebase-export-*/
+
+# Verification output
+screenshots/
+test-results/
+tsconfig.tsbuildinfo

@@ -1,0 +1,142 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-ink: #0b0f19;
+  --color-ink-2: #131a2a;
+  --color-ink-3: #1c2438;
+  --color-line: #27304a;
+  --color-muted: #8b96b0;
+  --color-accent: #f0447d;
+  --color-accent-2: #ff7aa8;
+  --color-visited: #3d5aa8;
+
+  --font-sans: ui-sans-serif, -apple-system, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #05070d;
+  color: #eef1f7;
+  font-family: var(--font-sans);
+  /* The app owns scrolling inside the phone frame; the page itself never scrolls. */
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Native-feeling momentum scrolling inside panels, with no visible scrollbar. */
+.scroll-y {
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.scroll-y::-webkit-scrollbar {
+  display: none;
+}
+
+/* Safe-area padding so the tab bar clears the iPhone home indicator. */
+.pb-safe {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+}
+.pt-safe {
+  padding-top: max(0.75rem, env(safe-area-inset-top));
+}
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+  color: inherit;
+}
+
+/* 16px minimum stops iOS Safari zooming the viewport when a field is focused. */
+input,
+textarea,
+select {
+  font-size: 16px;
+}
+
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+input[type='range']::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    hsl(0 72% 48%),
+    hsl(45 72% 48%),
+    hsl(90 72% 45%),
+    hsl(130 72% 45%)
+  );
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 26px;
+  height: 26px;
+  margin-top: -10px;
+  border-radius: 999px;
+  background: #fff;
+  border: 3px solid var(--color-ink);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.45);
+}
+input[type='range']::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    hsl(0 72% 48%),
+    hsl(45 72% 48%),
+    hsl(90 72% 45%),
+    hsl(130 72% 45%)
+  );
+}
+input[type='range']::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #fff;
+  border: 3px solid var(--color-ink);
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+.sheet-enter {
+  animation: sheet-up 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.fade-in {
+  animation: fade-in 0.18s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet-enter,
+  .fade-in {
+    animation: none;
+  }
+}
