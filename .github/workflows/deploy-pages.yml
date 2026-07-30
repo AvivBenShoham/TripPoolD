@@ -45,12 +45,12 @@ jobs:
         env:
           BASE_PATH: /${{ github.event.repository.name }}/
 
+      # Requires Pages to be switched on once, under
+      #   Settings → Pages → Build and deployment → Source: GitHub Actions
+      # `enablement: true` was tried and cannot work here: creating a Pages site is not
+      # something the workflow's GITHUB_TOKEN is permitted to do ("Resource not
+      # accessible by integration"), regardless of the `pages: write` permission.
       - uses: actions/configure-pages@v5
-        with:
-          # Turns Pages on via the API if it is not enabled yet, so there is no manual
-          # repository setting to remember. If this step ever fails, enable it once
-          # under Settings → Pages → Source: GitHub Actions.
-          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:

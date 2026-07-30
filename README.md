@@ -67,9 +67,11 @@ Three things make a project page work, and all three are already wired up:
   manifest's own location — so installing to the home screen works under any base path
   without templating.
 
-`actions/configure-pages` runs with `enablement: true`, so the first deploy switches Pages
-on by itself. If that ever fails, set it once under **Settings → Pages → Source: GitHub
-Actions**.
+**One-time setup:** Pages has to be switched on by the repository owner before the first
+deploy can succeed — under **Settings → Pages → Build and deployment → Source: GitHub
+Actions**. A workflow cannot do this for you: creating a Pages site is not something the
+`GITHUB_TOKEN` is permitted to do, even with `pages: write`. Once it is on, re-run the
+workflow from the Actions tab (or push anything to `main`) and it deploys.
 
 To host on Firebase instead, `npm run build && npx firebase deploy --only hosting` still
 works — `firebase.json` is configured, and the root-served build needs no `BASE_PATH`.
