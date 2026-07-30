@@ -31,7 +31,7 @@ const FIRESTORE_HOST = '127.0.0.1';
 const FIRESTORE_PORT = 8080;
 const PASSWORD = 'testpass123';
 
-const app = initializeApp({ projectId: 'poold-d8f26', apiKey: 'demo-key' }, 'seed');
+const app = initializeApp({ projectId: 'appdef-45ad0', apiKey: 'demo-key' }, 'seed');
 const auth = getAuth(app);
 connectAuthEmulator(auth, AUTH_EMULATOR, { disableWarnings: true });
 const db = getFirestore(app);

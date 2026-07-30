@@ -26,12 +26,16 @@ segmented control on the map switches between *All*, *Visited* and *Logged*.
 
 ## Before it will run against your Firebase project
 
-The project `poold-d8f26` was not provisioned when this was built — Authentication had
-never been configured and no Firestore database existed. Both need a project owner, so:
+The project (`appdef-45ad0`) needs a few things set up by its owner before sign-in and data
+will work:
 
 1. **Firebase console → Authentication → Sign-in method**: enable **Email/Password** and
    **Google**.
-2. **Firebase console → Firestore Database → Create database.** Pick a region and start in
+2. **Firebase console → Firestore Database → Create database.** If it asks for a Database
+   ID, leave it as `(default)` — do not give it a custom name. Everything in this app
+   (client SDK, `firebase.json`, the deploy workflow) assumes the default database; a
+   custom-named one will silently fail every read and write with a permission error that
+   looks identical to the rules never having deployed. Pick a region and start in
    production mode — the rules in this repo are the real ones and are meant to replace the
    defaults immediately.
 3. Deploy the rules and indexes:
@@ -39,15 +43,21 @@ never been configured and no Firestore database existed. Both need a project own
    npx firebase login
    npx firebase deploy --only firestore:rules,firestore:indexes
    ```
+   Confirm it actually deployed: **Firestore Database → Rules tab** in the console should
+   show the real rules (starting `rules_version = '2';` with a "PoolD security rules"
+   comment), not the stock `allow read, write: if false;`.
 4. **Authentication → Settings → Authorized domains**: add `avivbenshoham.github.io`.
    Without it Google sign-in fails on the deployed site (email/password still works).
 
-### If it hangs after sign-in
+### If it hangs after sign-in, or says "could not load your data"
 
-Signing in works but the app sits on **Loading…** → Cloud Firestore has not been created
-yet (step 2). Auth and Firestore are provisioned independently, so sign-in can succeed
-while every read afterwards goes nowhere. The app now bounds those reads and shows the
-reason instead of spinning, but the fix is still step 2.
+Signing in works but nothing after it does → almost always **step 2**, specifically the
+Database ID. Auth and Firestore are provisioned independently, and a Firestore database
+created under any ID other than `(default)` looks, from the app's perspective, exactly like
+no database existing at all: every read is refused with a permission error, because the
+`(default)` database the app talks to is empty and rule-less. The app bounds these reads
+and reports the failure rather than hanging forever, but the fix is still step 2 — check
+the Database ID shown in the console matches `(default)` exactly.
 
 Google sign-in fails on the deployed site while email/password works → step 4. Authorized
 domains only gate OAuth popups and redirects, not password sign-in.

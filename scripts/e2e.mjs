@@ -126,7 +126,7 @@ async function seedBob(aliceUid) {
     setDoc,
   } = await import('firebase/firestore');
 
-  const app = initializeApp({ projectId: 'poold-d8f26', apiKey: 'fake-api-key' }, 'seed');
+  const app = initializeApp({ projectId: 'appdef-45ad0', apiKey: 'fake-api-key' }, 'seed');
   const auth = getAuth(app);
   connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
   const db = getFirestore(app);
@@ -258,7 +258,7 @@ async function seedBob(aliceUid) {
 async function getUid(email, password) {
   const { initializeApp } = await import('firebase/app');
   const { getAuth, connectAuthEmulator, signInWithEmailAndPassword } = await import('firebase/auth');
-  const app = initializeApp({ projectId: 'poold-d8f26', apiKey: 'fake-api-key' }, `uid-${email}`);
+  const app = initializeApp({ projectId: 'appdef-45ad0', apiKey: 'fake-api-key' }, `uid-${email}`);
   const auth = getAuth(app);
   connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
   const cred = await signInWithEmailAndPassword(auth, email, password);

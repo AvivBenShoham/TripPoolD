@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
     "gen:countries": "node scripts/gen-countries.mjs",
-    "emu": "firebase emulators:start --only auth,firestore --project poold-d8f26",
+    "emu": "firebase emulators:start --only auth,firestore --project appdef-45ad0",
     "seed": "node scripts/seed.mjs",
     "test": "vitest run --project unit",
     "test:rules": "firebase emulators:exec --only firestore --project poold-test \"vitest run --project rules\"",

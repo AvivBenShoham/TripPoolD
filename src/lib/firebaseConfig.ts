@@ -9,13 +9,13 @@
  * Values can be overridden per-environment with VITE_FIREBASE_* variables.
  */
 export const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY ?? 'AIzaSyAb2Sy40MZKpeIdZd4X_yDKnvA3tGvtLUY',
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN ?? 'poold-d8f26.firebaseapp.com',
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID ?? 'poold-d8f26',
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY ?? 'AIzaSyAtonF0YwRLMJtQ3o6ym9tpbbj2L7mkXRk',
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN ?? 'appdef-45ad0.firebaseapp.com',
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID ?? 'appdef-45ad0',
   storageBucket:
-    import.meta.env.VITE_FIREBASE_STORAGE_BUCKET ?? 'poold-d8f26.firebasestorage.app',
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID ?? '147205101939',
-  appId: import.meta.env.VITE_FIREBASE_APP_ID ?? '1:147205101939:web:950bb17c60d0bb67fa8d06',
+    import.meta.env.VITE_FIREBASE_STORAGE_BUCKET ?? 'appdef-45ad0.firebasestorage.app',
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID ?? '947588081648',
+  appId: import.meta.env.VITE_FIREBASE_APP_ID ?? '1:947588081648:web:949f8388f2953d62849f35',
 };
 
 const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]', '::1', '0.0.0.0']);
