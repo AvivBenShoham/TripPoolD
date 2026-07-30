@@ -42,6 +42,16 @@ never been configured and no Firestore database existed. Both need a project own
 4. **Authentication → Settings → Authorized domains**: add `avivbenshoham.github.io`.
    Without it Google sign-in fails on the deployed site (email/password still works).
 
+### If it hangs after sign-in
+
+Signing in works but the app sits on **Loading…** → Cloud Firestore has not been created
+yet (step 2). Auth and Firestore are provisioned independently, so sign-in can succeed
+while every read afterwards goes nowhere. The app now bounds those reads and shows the
+reason instead of spinning, but the fix is still step 2.
+
+Google sign-in fails on the deployed site while email/password works → step 4. Authorized
+domains only gate OAuth popups and redirects, not password sign-in.
+
 The `apiKey` in `src/lib/firebaseConfig.ts` is not a secret — it identifies the project and
 is visible in the bundle of every Firebase web app. All real protection comes from
 `firestore.rules`. If you later want to restrict which origins may use the key, that is

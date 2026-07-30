@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -31,6 +32,7 @@ import {
   type UserSettings,
 } from '../types';
 import { buildCoverage, type Coverage } from '../lib/geo/coverage';
+import { READ_TIMEOUT_MS, TimeoutError, backendErrorMessage } from '../lib/async';
 
 interface DataState {
   entries: EncounterWithId[];
@@ -77,6 +79,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [outgoing, setOutgoing] = useState<FriendRequestWithId[]>([]);
   const [entriesReady, setEntriesReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Tracks whether the first snapshot has landed, without the timer closing over state.
+  const firstSnapshot = useRef(false);
 
   useEffect(() => {
     if (!uid) {
@@ -100,10 +104,23 @@ export function DataProvider({ children }: { children: ReactNode }) {
     // both exist before the user can create anything.
     void ensureAggregates(uid).catch(() => undefined);
 
+    // onSnapshot never fires — and never errors — while Firestore retries an unreachable
+    // backend, so without this the map would spin indefinitely on an unprovisioned
+    // project. Render the (empty) app with an explanation instead of hanging.
+    firstSnapshot.current = false;
+    const stallTimer = setTimeout(() => {
+      if (firstSnapshot.current) return;
+      setError(backendErrorMessage(new TimeoutError(READ_TIMEOUT_MS)));
+      setEntriesReady(true);
+    }, READ_TIMEOUT_MS);
+
     const unsubs = [
       watchMyEntries(
         uid,
         (list) => {
+          firstSnapshot.current = true;
+          clearTimeout(stallTimer);
+          setError(null);
           setEntries(list);
           setEntriesReady(true);
         },
@@ -125,7 +142,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
         onErr,
       ),
     ];
-    return () => unsubs.forEach((u) => u());
+    return () => {
+      clearTimeout(stallTimer);
+      unsubs.forEach((u) => u());
+    };
   }, [uid]);
 
   const mode = settings.encounterCoverageMode;

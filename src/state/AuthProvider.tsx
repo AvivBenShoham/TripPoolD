@@ -21,6 +21,7 @@ import {
 } from 'firebase/auth';
 import { auth, googleProvider, popupResolver } from '../lib/firebase';
 import { getProfile } from '../services/profiles';
+import { backendErrorMessage, withTimeout } from '../lib/async';
 import type { PublicProfile } from '../types';
 
 interface AuthState {
@@ -94,6 +95,7 @@ interface Resolved {
   uid: string | null;
   profile: PublicProfile | null;
   failed: boolean;
+  reason: string | null;
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -129,19 +131,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (uid === undefined) return;
     if (uid === null) {
-      setResolved({ uid: null, profile: null, failed: false });
+      setResolved({ uid: null, profile: null, failed: false, reason: null });
       return;
     }
     let cancelled = false;
     // Deliberately a profile lookup rather than getAdditionalUserInfo().isNewUser: a user
     // whose earlier signup transaction failed is not "new", but still has no profile, and
     // both paths must land in onboarding.
-    getProfile(uid)
+    // Bounded: an unprovisioned Firestore makes this hang forever rather than reject,
+    // which would leave the app on its loading spinner with nothing to say.
+    withTimeout(getProfile(uid))
       .then((p) => {
-        if (!cancelled) setResolved({ uid, profile: p, failed: false });
+        if (!cancelled) setResolved({ uid, profile: p, failed: false, reason: null });
       })
-      .catch(() => {
-        if (!cancelled) setResolved({ uid, profile: null, failed: true });
+      .catch((err) => {
+        if (!cancelled) {
+          setResolved({ uid, profile: null, failed: true, reason: backendErrorMessage(err) });
+        }
       });
     return () => {
       cancelled = true;
@@ -152,6 +158,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loading = uid === undefined || !settled;
   const profile = settled ? resolved.profile : null;
   const profileFailed = settled ? resolved.failed : false;
+  const profileFailReason = settled ? resolved.reason : null;
 
   const value = useMemo<AuthState>(
     () => ({
@@ -163,13 +170,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       needsOnboarding: !!user && !loading && !profile && !profileFailed,
       authError,
       profileError: profileFailed
-        ? 'Could not load your profile. Check your connection and try again.'
+        ? (profileFailReason ?? 'Could not load your profile. Try again.')
         : null,
       retryProfile: () => setRetryCount((n) => n + 1),
       refreshProfile: async () => {
         if (!user) return;
         const p = await getProfile(user.uid);
-        setResolved({ uid: user.uid, profile: p, failed: false });
+        setResolved({ uid: user.uid, profile: p, failed: false, reason: null });
       },
       signInEmail: async (email, password) => {
         await signInWithEmailAndPassword(auth, email.trim(), password);
@@ -207,7 +214,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await fbSignOut(auth);
       },
     }),
-    [user, profile, loading, profileFailed, authError],
+    [user, profile, loading, profileFailed, profileFailReason, authError],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

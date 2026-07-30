@@ -37,7 +37,8 @@ function PhoneFrame({ children }: { children: React.ReactNode }) {
 const CHROMELESS = [/^\/entry\/new$/, /^\/entry\/[^/]+\/edit$/, /^\/login$/, /^\/onboarding$/];
 
 export function App() {
-  const { user, loading, needsOnboarding, authError, profileError, retryProfile } = useAuth();
+  const { user, loading, needsOnboarding, authError, profileError, retryProfile, signOut } =
+    useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -69,9 +70,14 @@ export function App() {
       <PhoneFrame>
         <div className="flex h-full flex-col items-center justify-center gap-4 px-6 text-center">
           <div className="text-4xl">📡</div>
-          <h1 className="text-lg font-semibold">Could not load your profile</h1>
+          <h1 className="text-lg font-semibold">Could not load your data</h1>
           <p className="text-sm text-muted">{profileError}</p>
-          <Button onClick={retryProfile}>Try again</Button>
+          <div className="flex gap-2">
+            <Button onClick={retryProfile}>Try again</Button>
+            <Button variant="ghost" onClick={() => void signOut()}>
+              Sign out
+            </Button>
+          </div>
         </div>
       </PhoneFrame>
     );
